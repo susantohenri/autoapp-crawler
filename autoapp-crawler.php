@@ -10,6 +10,9 @@ License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 */
 
+include plugin_dir_path( __FILE__ ) . 'page.php';
+include plugin_dir_path( __FILE__ ) . 'supercarros.php';
+
 function autoapp_crawler_shortcode () {
 	ob_start ();
 	if ( isset( $_POST['autoapp_crawler_submit'] ) ) autoapp_crawler_form_submission_handler ();
@@ -32,8 +35,9 @@ function autoapp_crawler_form () {
 }
 
 function autoapp_crawler_form_submission_handler () {
-    echo $_POST['autoapp_crawler_url'];// https://www.supercarros.com/Dealers/autobrands2/
+    $url = $_POST['autoapp_crawler_url'];
+    $superCarRos = new SuperCarRos ($url);
+    echo $superCarRos->test ();
 }
-
 
 ?>
