@@ -29,7 +29,7 @@ Class SuperCarRos {
     function __construct ($url) {
         $this->dealer_pages[] = new Page ($url);
         $this->collectDealerPages (1);
-        $this->collectCarPages (1);
+        $this->collectCarPages (4);
     }
 
     private function collectDealerPages ($limit = false) {

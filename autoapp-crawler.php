@@ -74,10 +74,14 @@ function autoapp_crawler_create_post ($car) {
 	add_post_meta( $post_id, 'stm_lng_car_admin', $car['car_lng']);
 
 	// additional features
-	// echo json_encode ($car['car_features']);
-	foreach ($car['car_features'] as $additional_features) {
-		$result = add_post_meta ($post_id, 'additional_features', $additional_features);
-		// echo $additional_features . ' ' . json_encode ($result) . '<br>';
+	foreach ($car['car_features'] as $feature) {
+		$term_name = $feature;
+		$taxonomy = 'stm_additional_features';
+
+		if (!term_exists ($term_name, $taxonomy)) wp_insert_term ($term_name, $taxonomy);
+		$term = get_term_by ('name', $term_name, $taxonomy);
+		$slug = $term->slug;
+		add_post_meta ($post_id, 'additional_features', $term_name);
 	}
 
 	// photos
