@@ -49,17 +49,42 @@ function autoapp_crawler_create_post ($car) {
         'post_type' => 'listings'
     );
 	$post_id = wp_insert_post( $my_post );
+
+	// free text attributes
+	$attributes = array ('car_name', 'car_price', 'car_mileage', 'car_engine');
+	foreach ($attributes as $field) {
+		add_post_meta( $post_id, str_replace ('car_', '', $field), $car[$field]);
+	}
+
+	// attribute with defined options
+	$taxonomies = array ('car_body', 'car_fuel', 'car_transmission', 'car_drive', 'car_exterior-color', 'car_interior-color');
+	foreach ($taxonomies as $field) {
+		$term_name = $car[$field];
+		$taxonomy = str_replace ('car_', '', $field);
+
+		if (!term_exists ($term_name, $taxonomy)) wp_insert_term ($term_name, $taxonomy);
+		$term = get_term_by ('name', $term_name, $taxonomy);
+		$slug = $term->slug;
+		add_post_meta ($post_id, $taxonomy, $slug);
+	}
+
+	// address, lat, & lng
+	add_post_meta( $post_id, 'stm_car_location', $car['car_address']);
+	add_post_meta( $post_id, 'stm_lat_car_admin', $car['car_lat']);
+	add_post_meta( $post_id, 'stm_lng_car_admin', $car['car_lng']);
+
+	// additional features
+	// echo json_encode ($car['car_features']);
+	foreach ($car['car_features'] as $additional_features) {
+		$result = add_post_meta ($post_id, 'additional_features', $additional_features);
+		// echo $additional_features . ' ' . json_encode ($result) . '<br>';
+	}
+
+	// photos
 	// $media_id = autoapp_crawler_insert_attachment_from_url ($car['car_photos'][0], $post_id);
     // foreach ($car['car_photos'] as $src) {
     //     autoapp_crawler_insert_attachment_from_url ($src, $post_id);
 	// }
-	$attributes = array ('car_name', 'car_price', 'car_body', 'car_mileage', 'car_fueltype', 'car_engine', 'car_transmission', 'car_drive', 'car_exterior_color', 'car_interior_color');
-	foreach ($attributes as $field) {
-		add_post_meta( $post_id, str_replace ('car_', '', $field), $car[$field]);
-	}
-	add_post_meta( $post_id, 'stm_car_location', $car['car_address']);
-	add_post_meta( $post_id, 'stm_lat_car_admin', $car['car_lat']);
-	add_post_meta( $post_id, 'stm_lng_car_admin', $car['car_lng']);
 }
 
 function autoapp_crawler_insert_attachment_from_url($url, $parent_post_id = null) {
