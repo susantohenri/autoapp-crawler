@@ -5,15 +5,30 @@ Class SuperCarRos {
     protected $site_url = 'https://www.supercarros.com/';
     protected $xpath = array (
         'page_numbers' => '/html/body/div[3]/div/div[2]/div[1]/div/div[3]/div[4]/div[1]/ul/li/a',
-        'cars' => '/html/body/div[3]/div/div[2]/div[1]/div/div[3]/ul/li/a'
+        'cars' => '/html/body/div[3]/div/div[2]/div[1]/div/div[3]/ul/li/a',
+
+        'car_name' => '/html/body/div[3]/div/div[2]/div[1]/div[1]/h1',
+        'car_price'=> '/html/body/div[3]/div/div[2]/div[1]/div[1]/h3',
+        'car_address' => '/html/body/div[3]/div/div[2]/div[2]/ul/li[7]',
+        'car_body' => '/html/body/div[3]/div/div[2]/div[1]/div[2]/div[2]/div[5]/table/tr[3]/td[4]',
+        'car_mileage' => '/html/body/div[3]/div/div[2]/div[1]/div[2]/div[2]/div[5]/table/tr[4]/td[4]',
+        'car_fueltype' => '/html/body/div[3]/div/div[2]/div[1]/div[2]/div[2]/div[5]/table/tr[5]/td[2]',
+        'car_engine' => '/html/body/div[3]/div/div[2]/div[1]/div[2]/div[2]/div[5]/table/tr[2]/td[2]',
+        'car_transmission' => '/html/body/div[3]/div/div[2]/div[1]/div[2]/div[2]/div[5]/table/tr[6]/td[2]',
+        'car_drive' => '/html/body/div[3]/div/div[2]/div[1]/div[2]/div[2]/div[5]/table/tr[7]/td[2]',
+        'car_exterior_color' => '/html/body/div[3]/div/div[2]/div[1]/div[2]/div[2]/div[5]/table/tr[3]/td[2]',
+        'car_interior_color' => '/html/body/div[3]/div/div[2]/div[1]/div[2]/div[2]/div[5]/table/tr[4]/td[2]',
+
+        'car_photos' => '/html/body/div[3]/div/div[2]/div[1]/div[2]/div[1]/ul/li/a/img',
+        'car_gmap' => '/html/body/div[3]/div/div[2]/div[2]/ul/li[11]/iframe',
     );
     public $dealer_pages = array ();
     public $car_pages = array ();
 
     function __construct ($url) {
         $this->dealer_pages[] = new Page ($url);
-        $this->collectDealerPages (2);
-        $this->collectCarPages (4);
+        $this->collectDealerPages (1);
+        $this->collectCarPages (1);
     }
 
     private function collectDealerPages ($limit = false) {
@@ -40,11 +55,46 @@ Class SuperCarRos {
         }
     }
 
+    function getCars () {
+        $cars = array();
+        foreach ($this->car_pages as $car_page) {
+            $car = array ();
+            $attributes = array ('car_name', 'car_price', 'car_address', 'car_body', 'car_mileage', 'car_fueltype', 'car_engine', 'car_transmission', 'car_drive', 'car_exterior_color', 'car_interior_color');
+            foreach ($attributes as $field) $car[$field] = $this->domQuery ($car_page->dom, $field);
+            $car['car_photos'] = $this->domQueryPhotos ($car_page->dom, 'car_photos');
+            $car['car_gmap'] = $this->domQueryMap ($car_page->dom, 'car_gmap');
+            $car['car_lat'] = trim (explode (',', $car['car_gmap'])[0]);
+            $car['car_lng'] = trim (explode (',', $car['car_gmap'])[1]);
+            $cars[] = $car;
+        }
+        return $cars;
+    }
+
+    function domQuery ($dom, $element) {
+        return $dom->query($this->xpath[$element])->item(0)->nodeValue;
+    }
+
+    function domQueryPhotos ($dom, $element) {
+        $src = array ();
+        foreach ($dom->query($this->xpath[$element]) as $node) {
+            $src[] = $node->getAttribute('src');
+        }
+        return $src;
+    }
+
+    function domQueryMap ($dom, $element) {
+        $src = $dom->query($this->xpath[$element])->item(0)->getAttribute('src');
+        $latLng = explode ('&zoom', explode ('er=', $src)[1])[0];
+        return $latLng;
+    }
+
     function test () {
-        return json_encode (array (
-            'dealer_pages' => count ($this->dealer_pages),
-            'car_pages' => count ($this->car_pages)
-        ));
+        return json_encode ($this->getCars ());
+        // return $this->car_pages[0]->dom->query('/html/body/div[3]/div/div[2]/div[2]/ul/li[11]/iframe')
+        // ->item(0)->nodeValue
+        // ->count()
+        // ->item(0)->getAttribute('src')
+        // ;
     }
 }
 

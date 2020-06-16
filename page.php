@@ -23,8 +23,8 @@ Class Page {
         ));
         
         $response = curl_exec($curl);
-        $file = plugin_dir_path( __FILE__ ) . 'page.html';
-        file_put_contents($file, $response);
+        // $file = plugin_dir_path( __FILE__ ) . 'page.html';
+        // file_put_contents($file, $response);
         curl_close($curl);
     
         $dom = new DOMDocument();
