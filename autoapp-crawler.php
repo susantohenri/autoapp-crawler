@@ -35,7 +35,7 @@ function autoapp_crawler_form () {
 }
 
 function autoapp_crawler_form_submission_handler () {
-    $url = $_POST['autoapp_crawler_url'];
+	$url = $_POST['autoapp_crawler_url'];
 	$superCarRos = new SuperCarRos ($url);
 	// echo $superCarRos->test();
     foreach ($superCarRos->getCars () as $car) autoapp_crawler_create_post ($car);
@@ -53,7 +53,7 @@ function autoapp_crawler_create_post ($car) {
 	// free text attributes
 	$attributes = array ('car_name', 'car_price', 'car_mileage', 'car_engine');
 	foreach ($attributes as $field) {
-		add_post_meta( $post_id, str_replace ('car_', '', $field), $car[$field]);
+		add_post_meta ($post_id, str_replace ('car_', '', $field), $car[$field]);
 	}
 
 	// attribute with defined options
@@ -85,10 +85,11 @@ function autoapp_crawler_create_post ($car) {
 	}
 
 	// photos
-	// $media_id = autoapp_crawler_insert_attachment_from_url ($car['car_photos'][0], $post_id);
-    // foreach ($car['car_photos'] as $src) {
-    //     autoapp_crawler_insert_attachment_from_url ($src, $post_id);
-	// }
+	$photoIDs = array ();
+    foreach ($car['car_photos'] as $src) {
+        $photoIDs[] = autoapp_crawler_insert_attachment_from_url ($src, $post_id);
+	}
+	add_post_meta ($post_id, 'gallery', $photoIDs);
 }
 
 function autoapp_crawler_insert_attachment_from_url($url, $parent_post_id = null) {

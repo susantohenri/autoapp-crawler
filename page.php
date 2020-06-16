@@ -23,8 +23,16 @@ Class Page {
         ));
         
         $response = curl_exec($curl);
-        // $file = plugin_dir_path( __FILE__ ) . 'page.html';
-        // file_put_contents($file, $response);
+
+        /*
+          create a file named page.html, and
+          uncomment following lines  to print HTML result to a file,
+          in case the site has different page to serve when accessed through CURL instead of regular web browser
+          we can get xpath from it then
+          $file = plugin_dir_path( __FILE__ ) . 'page.html';
+          file_put_contents($file, $response);
+        */
+
         curl_close($curl);
     
         $dom = new DOMDocument();

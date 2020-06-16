@@ -28,8 +28,8 @@ Class SuperCarRos {
 
     function __construct ($url) {
         $this->dealer_pages[] = new Page ($url);
-        $this->collectDealerPages (1);
-        $this->collectCarPages (4);
+        $this->collectDealerPages ();
+        $this->collectCarPages ();
     }
 
     private function collectDealerPages ($limit = false) {
@@ -111,14 +111,7 @@ Class SuperCarRos {
     }
 
     function test () {
-        // return $this->car_pages[0]->dom->query($this->xpath['car_name'])->item(0)->nodeValue;
-        // return $this->car_pages[0]->url;
-        return json_encode ($this->getCars ());
-        // return $this->car_pages[0]->dom->query('/html/body/div[3]/div/div[2]/div[2]/ul/li[11]/iframe')
-        // ->item(0)->nodeValue
-        // ->count()
-        // ->item(0)->getAttribute('src')
-        // ;
+        return 'anything you want from the class';
     }
 }
 
