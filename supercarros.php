@@ -19,7 +19,7 @@ Class SuperCarRos {
         'car_exterior-color' => '/html/body/div[3]/div/div[2]/div[1]/div[2]/div[2]/div[5]/table/tr[3]/td[2]',
         'car_interior-color' => '/html/body/div[3]/div/div[2]/div[1]/div[2]/div[2]/div[5]/table/tr[4]/td[2]',
 
-        'car_photos' => '/html/body/div[3]/div/div[2]/div[1]/div[2]/div[1]/ul/li/a/img',
+        'car_photos' => '/html/body/div[3]/div/div[2]/div[1]/div[2]/div[1]/ul/li/a',
         'car_gmap' => '/html/body/div[3]/div/div[2]/div[2]/ul/li[7]/iframe',
         'car_features' => '/html/body/div[3]/div/div[2]/div[1]/div[2]/div[2]/div[6]/ul/li'
     );
@@ -91,7 +91,7 @@ Class SuperCarRos {
     function domQueryPhotos ($dom, $element) {
         $src = array ();
         foreach ($dom->query($this->xpath[$element]) as $node) {
-            $src[] = $node->getAttribute('src');
+            $src[] = $node->getAttribute('href');
         }
         return $src;
     }
